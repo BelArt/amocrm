@@ -26,7 +26,7 @@ set('mmcoexpo_symlink', REMOTE_PATH . "/release/_mmcoexpo");
 // сами папки для пользователей будет формироваться на лету исходя из входных данных
 
 set('rep_mmcoexpo', "git@github.com:BelArt/amocrm.git");
-set('rep_user', "git@github.com:BelArt/amocrm.git");
+set('rep_user', "git@github.com:BelArt");
 
 set('mmcoexpo_new', false); // если деплоем mmcoexpo, то будет true
 set('remove_git', true);

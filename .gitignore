@@ -6,6 +6,8 @@
 provision/*
 .vagrant/*
 vendor/*
+app/user/*
+!app/user/.gitkeep
 temp/*
 !temp/.gitkeep
 data/*
