@@ -1,0 +1,29 @@
+{
+  "repositories": [
+    {
+      "type": "package",
+      "package": {
+        "name": "jquery/jquery",
+        "version": "1.11.2",
+        "dist": {
+          "url": "http://code.jquery.com/jquery-1.11.2.js",
+          "type": "file"
+        }
+      }
+    }
+  ],
+  "require": {
+    "php": ">=7.0.0",
+    "ext-phalcon": "*",
+    "ext-json": "*",
+    "ext-curl": "*",
+    "react/http": "0.8.4",
+    "phalcon/incubator": "3.4.3",
+    "twbs/bootstrap": "3.3.4",
+    "jquery/jquery": "1.11.2",
+    "oyejorge/less.php": "1.7.0.3"
+  },
+  "config": {
+    "secure-http": false
+  }
+}

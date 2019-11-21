@@ -1,0 +1,20 @@
+# Switch on history
+setopt APPEND_HISTORY
+
+# Remove from history dups, space and blank line
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_REDUCE_BLANKS
+
+# For autocompletion of command line switches for aliases
+setopt COMPLETE_ALIASES
+
+# Withoute cd
+setopt AUTO_CD
+
+# Choose your folder with arrows
+zstyle ':completion:*' menu select=long-list select=0
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+
+# Correct all misprint
+setopt CORRECT_ALL

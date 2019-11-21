@@ -1,0 +1,104 @@
+<?php
+/**
+ * точка входа для консольных команд самого фреймворка
+ * вызов команд происходит следующим образом:
+ * php bin/console <taks>:<action> [<params>]
+ * taks - это задача (контроллер)
+ * action - это экшен, что непосредственно исполняется
+ * params - это параметр(ы) в экшен, можно перечислять через пробел, можно именованные (name=param), можно массивом
+ * (name=param1,param2) если вызвать экшена, то программа попытается найти главный экшен указанной задачи
+ * <taks>Task::mainAction()
+ */
+
+// Определяем путь к каталогу приложений
+use Phalcon\Text;
+
+define('ROOT_PATH', __DIR__);
+define('APP_PATH', ROOT_PATH . '/app');
+define('VENDOR_PATH', ROOT_PATH . '/vendor');
+// подключаем зависимости самого ядра
+require_once VENDOR_PATH . '/autoload.php';
+
+try {
+    // Определяем консольные аргументы
+    $arguments = [];
+    $params    = [];
+    $daemon    = false;
+
+    foreach ($argv as $k => $arg) {
+        // в первом аргументе вызов задачи и экшена вида <task>:<action>
+        if ($k == 1) {
+            $tmp = explode(':', $arg);
+            if (count($tmp) < 2) {
+                throw new \Exception('Missing running task & action: <task>:<action>[:daemon] [<args>]');
+            }
+
+            // определяем глобальные константы для текущей задачи и действия
+            define('CURRENT_TASK', ucfirst($tmp[0]));
+            define('CURRENT_ACTION', $tmp[1]);
+
+            $arguments['task']   = '\\App\\Common\\Task\\' . Text::camelize($tmp[0]);
+            $arguments['action'] = Text::camelize($tmp[1]);
+
+            // Если необходимо залокать процесс, то поменяем флаг
+            $daemon = isset($tmp[2]);
+        } elseif ($k >= 2) {
+            // следующие аргументы могут быть одиночные <arg_value> или именованные <arg_name>=<arg_value> (без пробелов)
+            $tmp = explode('=', $arg);
+            if (count($tmp) == 2) {
+                // возможно через запятую перечислить нумерованный массив (обычный [<value1>, <value2>, <value2>])
+                $arr = explode(',', $tmp[1]);
+                if (count($arr) < 2) {
+                    $params[$tmp[0]] = $tmp[1];
+                } else {
+                    $params[$tmp[0]] = $arr;
+                }
+            } else {
+                $params[] = $arg;
+            }
+        }
+    }
+
+    if (count($params) > 0) {
+        $arguments['params'] = $params;
+    }
+
+    require_once APP_PATH . '/common/Bootstrap/Bootstrap.php';
+    require_once APP_PATH . '/common/Bootstrap/Environment.php';
+    require_once APP_PATH . '/common/Bootstrap/Application.php';
+    $app = new \App\Common\Bootstrap\Bootstrap(
+        new \Phalcon\Di\FactoryDefault\Cli(),
+        \App\Common\Bootstrap\Application::console(),
+        \App\Common\Bootstrap\Environment::fromFile(ROOT_PATH . '/.env')
+    );
+
+    // Для поддержание уникальности демона создаём .pid-файл для конкретной команды и демонизируем его (отвязываем от консоли).
+    // Расположим это после инициализации приложения, потому что нужен конфиг, где указана папка временных файлов.
+    if ($daemon) {
+        $task = explode('\\', $arguments['task']);
+        $app->demonize(
+            'mmcoexpo-console-' . strtolower($task[count($task) - 1]) . '_' . strtolower($arguments['action'])
+        );
+    }
+
+    (new \Phalcon\Cli\Console($app->getDi()))->handle($arguments);
+} catch (\App\Common\Library\Amo\AmoException $e) {
+    if (array_key_exists('app', $GLOBALS) && $app->getDi()->has('env') && $app->getDi()->get('env') == 'prod') {
+        $app->getDi()->get('log')->error($app->getExceptionText($e));
+    }
+
+    echo $app->getExceptionText($e);
+} catch (\Error $e) {
+    if (array_key_exists('app', $GLOBALS) && $app->getDi()->has('env') && $app->getDi()->get('env') == 'prod') {
+        $app->getDi()->get('log')->error($app->getExceptionText($e));
+    }
+
+    echo $app->getExceptionText($e);
+} catch (\Exception $e) {
+    if (array_key_exists('app', $GLOBALS) && $app->getDi()->has('log')) {
+        $app->getDi()->get('log')->error($app->getExceptionText($e));
+    }
+
+    echo $app->getExceptionText($e);
+    exit(255);
+}

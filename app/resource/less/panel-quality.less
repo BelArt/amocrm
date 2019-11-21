@@ -1,0 +1,41 @@
+.horizontal-panel-wrap {
+	width: 100%;
+	overflow: auto;
+	
+	.horizontal-panel {
+		display: table;
+		table-layout: fixed;
+		width: 100%;
+		
+		.status-column {
+			width: 300px;
+			display: table-cell;
+			padding: 0 10px;
+			
+			.column-title {
+				text-transform: uppercase;
+				text-align: center;
+				
+				> i {
+					height: 5px;
+					background-color: #e6e6e6;
+					width: 100%;
+					margin: 10px 0;
+					display: block;
+				}
+			}
+			
+			.item-lead {
+				padding: 10px;
+				
+				.item-name {
+					margin: 0 0 10px 0;
+				}
+				
+				> div {
+					margin: 2px 0;
+				}
+			}
+		}
+	}
+}
