@@ -105,7 +105,7 @@ return [
 
     ['url', function () {
         $url = new \Phalcon\Mvc\Url();
-        $url->setBaseUri('https://api.' . $this->get('config')['domain']);
+        $url->setBaseUri('https://core.' . $this->get('config')['domain']);
 
         return $url;
     }, true],

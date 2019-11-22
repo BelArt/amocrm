@@ -184,7 +184,7 @@ return [
     ['url', function () {
         $config = $this->get('config');
         $url = new Phalcon\Mvc\Url();
-        $url->setBaseUri('http://pannel.'.$config['domain']);
+        $url->setBaseUri('https://pannel.'.$config['domain']);
         return $url;
     }, true],
 
