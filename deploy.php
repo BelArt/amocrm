@@ -1115,50 +1115,6 @@ task(
 )->desc('Clear opcache');
 
 /**
- * Send notice to Slack
- */
-task(
-    'slack:end_of_deploy',
-    function () {
-        if (!get('deploy_type')) {
-            error('Notice to Slack failed!');
-
-            return false;
-        }
-
-        if (get('deploy_type') == '_mmcoexpo') {
-            $textSlack = 'Деплой ядра mmcoexpo завершён.';
-        } else {
-            $user      = input()->getOption('user', get('deploy_type'));
-            $textSlack = 'Деплой пользователя "' . $user . '" завершён.';
-        }
-
-        $channelSlack = 'error';
-        $userSlack    = 'Santa Claus';
-        $icon         = ':santa:';
-
-        $data = [
-            "username"   => $userSlack,
-            "link_names" => 1,
-            "channel"    => "#" . $channelSlack,
-            "icon_emoji" => $icon,
-            "text"       => $textSlack,
-        ];
-
-        $data = "payload=" . json_encode($data);
-
-        $ch = curl_init("https://hooks.slack.com/services/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");
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($ch);
-        curl_close($ch);
-
-        return $result == 'ok';
-    }
-)->desc('Send notice to Slack');
-
-/**
  * Проверка существования директории задеплоиного пользователя
  */
 function userExists($user)
