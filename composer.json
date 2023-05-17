@@ -17,7 +17,7 @@
     "ext-phalcon": "*",
     "ext-json": "*",
     "ext-curl": "*",
-    "react/http": "0.8.4",
+    "react/http": "1.9.0",
     "phalcon/incubator": "3.4.3",
     "twbs/bootstrap": "3.3.4",
     "jquery/jquery": "1.11.2",
